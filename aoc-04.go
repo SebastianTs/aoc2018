@@ -42,7 +42,7 @@ func main() {
 
 			for m := start.Minute(); m < stop.Minute(); m++ {
 				a := minutes[id]
-				a[m] += 1
+				a[m]++
 				minutes[id] = a
 			}
 		}

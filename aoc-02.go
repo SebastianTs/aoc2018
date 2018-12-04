@@ -15,12 +15,12 @@ func main() {
 	for _, id := range ids {
 		count := make(map[rune]int)
 		for _, c := range id {
-			count[c] += 1
+			count[c]++
 		}
 		seen := make(map[int]bool)
 		for _, v := range count {
 			if v > 1 && !seen[v] {
-				freq[v] += 1
+				freq[v]++
 				seen[v] = true
 			}
 		}
@@ -39,7 +39,7 @@ func main() {
 			diff := 0
 			for i := range x {
 				if x[i] != y[i] {
-					diff += 1
+					diff++
 				}
 			}
 			if diff == 1 {
