@@ -39,7 +39,7 @@ func react(poly string) int {
 			result.Push(c)
 		} else {
 			last, _ := result.Peek()
-			if int(last)^int(c) == 32 {
+			if last^c == 32 {
 				result.Pop()
 			} else {
 				result.Push(c)
