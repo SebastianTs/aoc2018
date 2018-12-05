@@ -39,7 +39,7 @@ func react(poly string) int {
 			result.Push(c)
 		} else {
 			last, _ := result.Peek()
-			if abs(int(last)-int(c)) == 32 {
+			if int(last)^int(c) == 32 {
 				result.Pop()
 			} else {
 				result.Push(c)
@@ -47,14 +47,6 @@ func react(poly string) int {
 		}
 	}
 	return result.Size()
-}
-
-func abs(n int) int {
-	if n > 0 {
-		return n
-	} else {
-		return -n
-	}
 }
 
 type stack struct {
