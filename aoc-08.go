@@ -14,8 +14,8 @@ func main() {
 	}
 	i := 0
 	root := parse(is, &i)
-	fmt.Println(root.Sum())
-	fmt.Println(root.Value())
+	fmt.Println("The sum of all metadata entries is:\t", root.Sum())
+	fmt.Println("The value of the root node is:\t\t" ,root.Value())
 }
 
 type Node struct {
@@ -24,16 +24,18 @@ type Node struct {
 }
 
 func parse(list []int, i *int) Node{
-	node := Node{make([]int,0),make([]Node,0)}
 	children := list[*i]
 	*i++
 	metadata := list[*i]
 	*i++
+	node := Node{metas: make([]int,metadata),
+		         nodes: make([]Node,children),
+			}
 	for j:=0; j < children; j++ {
-		node.nodes = append(node.nodes, parse(list, i))
+		node.nodes[j] = parse(list, i)
 	}
 	for j:=0;j < metadata; j++{
-		node.metas = append(node.metas, list[*i])
+		node.metas[j] = list[*i]
 		*i++
 	}
 	return node
@@ -61,7 +63,7 @@ func (n *Node) Value() int{
 	}
 	var value int
 	for _, m := range n.metas{
-		if m <= len(n.nodes){
+		if m < len(n.nodes)+1 {
 			value += n.nodes[m-1].Value()
 		}
 	}
