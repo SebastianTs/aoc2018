@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"container/list"
 	"container/ring"
 	"fmt"
 	"os"
@@ -14,11 +15,11 @@ func main() {
 	}
 	//fmt.Println(play(10,1618))
 	fmt.Println("the winning Elf's score is", play(players, points))
-	fmt.Println("if the number of the last marble were 100 times larger the winning Elf's score is", play(players, points*100))
+	fmt.Println("if the number of the last marble were 100 times larger the winning Elf's score is", playList(players, points*100))
 }
 
 func play(players, last_marble int) int {
-	scores := make(map[int]int)
+	scores := make([]int,players)
 	circle := ring.New(1)
 	circle.Value = 0
 
@@ -39,6 +40,40 @@ func play(players, last_marble int) int {
 	}
 	max := 0
 	for _, v := range scores {
+		if v > max {
+			max = v
+		}
+	}
+	return max
+}
+
+func playList(players, totalPlays int) int {
+	marbles := list.New()
+	currentMarble := marbles.PushBack(0)
+	score := make([]int, players)
+
+	for nextMarble := 1; nextMarble < totalPlays; nextMarble++ {
+		if nextMarble%23 == 0 {
+			rm := currentMarble
+			for i := 0; i < 7; i++ {
+				rm = rm.Prev()
+				if rm == nil {
+					rm = marbles.Back()
+				}
+			}
+			score[nextMarble % players] += nextMarble + rm.Value.(int)
+			currentMarble = rm.Next()
+			marbles.Remove(rm)
+		} else {
+			n := currentMarble.Next()
+			if n == nil {
+				n = marbles.Front()
+			}
+			currentMarble = marbles.InsertAfter(nextMarble, n)
+		}
+	}
+	max := 0
+	for _, v := range score {
 		if v > max {
 			max = v
 		}
