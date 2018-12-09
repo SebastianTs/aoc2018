@@ -43,12 +43,12 @@ func main() {
 	//part2
 	for _, c := range claims {
 		match := true
-	Search:
+
 		for i := 0; i < c.width; i++ {
 			for j := 0; j < c.heigth; j++ {
 				if field[c.x+i][c.y+j] != c.id {
 					match = false
-					break Search
+					return
 				}
 			}
 		}

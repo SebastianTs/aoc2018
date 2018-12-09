@@ -47,29 +47,29 @@ func play(players, last_marble int) int {
 	return max
 }
 
-func playList(players, totalPlays int) int {
-	marbles := list.New()
-	currentMarble := marbles.PushBack(0)
+func playList(players, last int) int {
+	circle := list.New()
+	marble := circle.PushBack(0)
 	score := make([]int, players)
 
-	for nextMarble := 1; nextMarble < totalPlays; nextMarble++ {
-		if nextMarble%23 == 0 {
-			rm := currentMarble
+	for m := 1; m < last; m++ {
+		if m%23 == 0 {
+			cur := marble
 			for i := 0; i < 7; i++ {
-				rm = rm.Prev()
-				if rm == nil {
-					rm = marbles.Back()
+				cur = cur.Prev()
+				if cur == nil {
+					cur = circle.Back()
 				}
 			}
-			score[nextMarble % players] += nextMarble + rm.Value.(int)
-			currentMarble = rm.Next()
-			marbles.Remove(rm)
+			score[m % players] += m + cur.Value.(int)
+			marble = cur.Next()
+			circle.Remove(cur)
 		} else {
-			n := currentMarble.Next()
-			if n == nil {
-				n = marbles.Front()
+			next := marble.Next()
+			if next == nil {
+				next = circle.Front()
 			}
-			currentMarble = marbles.InsertAfter(nextMarble, n)
+			marble = circle.InsertAfter(m, next)
 		}
 	}
 	max := 0
