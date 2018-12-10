@@ -13,3 +13,6 @@
 
 /input/*
 /.idea/*
+
+# I don't want do share the puzzle inputs
+*.txt
