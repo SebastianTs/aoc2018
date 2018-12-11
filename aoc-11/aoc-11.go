@@ -24,19 +24,26 @@ func main() {
 	best := math.MinInt32
 
 	img := image.NewRGBA(image.Rect(0,0,gridMaxX, gridMaxY))
+	imgSum := image.NewRGBA(image.Rect(0,0,gridMaxX, gridMaxY))
 	for x:= 1; x <= gridMaxY; x++{
 		for y:= 1; y <= gridMaxY; y++{
 			id := x + 10
 			p := id * y + serial
 			p = (p*id) / 100 % 10 - 5
+			// https://de.wikipedia.org/wiki/Integralbild
+			sum[xy{x,y}]	= p + sum[xy{x,y-1}] + sum[xy{x-1,y}] - sum[xy{x-1,y-1}]
 			img.Set(x-1,y-1,color.NRGBA{
 				R: uint8(p & 128),
 				G: uint8(p & 64),
 				B: uint8(p & 8),
 				A: 255,
 			})
-			// https://de.wikipedia.org/wiki/Integralbild
-			sum[xy{x,y}]	= p + sum[xy{x,y-1}] + sum[xy{x-1,y}] - sum[xy{x-1,y-1}]
+			imgSum.Set(x-1,y-1,color.NRGBA{
+				R: uint8(sum[xy{x,y}] & 255),
+				G: uint8(sum[xy{x,y}] & 1 << 255),
+				B: uint8(sum[xy{x,y}] & 2 << 255),
+				A: 255,
+			})
 		}
 	}
 
@@ -79,7 +86,12 @@ func main() {
 			img.Set(bx-2+x,by-2+y, color.NRGBA{ B: 255, A: 255})
 		}
 	}
-	f, err := os.Create("image.png")
+	saveImage(img, "image.png")
+	saveImage(imgSum, "image_sum.png")
+}
+
+func saveImage(img *image.RGBA, path string) {
+	f, err := os.Create(path)
 	if err != nil {
 		log.Fatal(err)
 	}
