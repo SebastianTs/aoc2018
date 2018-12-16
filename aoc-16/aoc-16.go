@@ -27,15 +27,8 @@ func main() {
 func check(n note,fn []opFunc) (count int){
 	for _, f := range fn{
 		cur := f(n.op.inputA, n.op.inputB, n.op.output, n.before)
-		equal := true
-		for i:=0; i < len(cur);i++{
-			if cur[i] != n.after[i]{
-				equal = false
-				break
-			}
-		}
-		if equal{
-			count++
+		if cur == n.after{
+				count++
 		}
 	}
 	return count
