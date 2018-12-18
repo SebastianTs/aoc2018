@@ -25,9 +25,9 @@ func main() {
 		next := apply(area)
 		area = next
 		if i == minutes{
-			fmt.Println("the total resource value of the lumber collection acres after 10 minutes is", countResource(area))
+			fmt.Println("the total resource value of the lumber collection acres after 10 minutes is", resourceScore(area))
 		}
-		cur := countResource(area)
+		cur := resourceScore(area)
 		if _, ok := score[cur]; !ok {
 			score[cur] = i
 		} else {
@@ -37,7 +37,7 @@ func main() {
 			}
 		}
 	}
-	fmt.Println("the total resource value of the lumber collection acres after all is", countResource(area))
+	fmt.Println("the total resource value of the lumber collection acres after all is", resourceScore(area))
 }
 
 func print(s area){
@@ -49,7 +49,10 @@ func print(s area){
 	}
 }
 
-func countResource(s area) int{
+func resourceScore(s area) int{
+	if s.resourceCount != nil{
+		return s.resourceCount[lumberyard] * s.resourceCount[tree]
+	}
 	count := make(map[rune]int)
 	for y := 0; y <= s.maxDimensions.y; y++ {
 		for x := 0; x <= s.maxDimensions.x; x++ {
@@ -60,9 +63,11 @@ func countResource(s area) int{
 	return count[lumberyard] * count[tree]
 }
 
-func apply(s area) (out area) {
-	out.maxDimensions = s.maxDimensions
-	out.acres = make(map[xy]rune)
+func apply(s area) area {
+	out := area{ acres:  make(map[xy]rune),
+				maxDimensions: s.maxDimensions,
+				resourceCount: make(map[rune]int),
+    }
 	for x := 0; x <= s.maxDimensions.x; x++ {
 		for y := 0; y <= s.maxDimensions.y; y++ {
 			adjCount := make(map[rune]int)
@@ -79,18 +84,22 @@ func apply(s area) (out area) {
 			case open:
 				if adjCount[tree] >= 3 {
 					out.acres[pos] = tree
+					out.resourceCount[tree]++
 				} else {
-					out.acres[pos] = s.acres[pos]
+					out.acres[pos] = open
 				}
 			case tree:
 				if adjCount[lumberyard] >= 3 {
 					out.acres[pos] = lumberyard
+					out.resourceCount[lumberyard]++
 				} else {
-					out.acres[pos] = s.acres[pos]
+					out.acres[pos] = tree
+					out.resourceCount[tree]++
 				}
 			case lumberyard:
 				if adjCount[lumberyard] >= 1 && adjCount[tree] >= 1 {
 					out.acres[pos] = lumberyard
+					out.resourceCount[lumberyard]++
 				} else {
 					out.acres[pos] = open
 				}
@@ -107,6 +116,7 @@ type xy struct{
 type area struct{
 	acres         map[xy]rune
 	maxDimensions xy
+	resourceCount map[rune]int
 }
 
 func readInput(path string) (out area, err error) {
@@ -115,7 +125,7 @@ func readInput(path string) (out area, err error) {
 	f, err := os.Open(path)
 	defer f.Close()
 	if err != nil {
-		return area{landscape, xy{}} ,  err
+		return area{} ,  err
 	}
 	scanner := bufio.NewScanner(f)
 	y,maxx := 0,0
@@ -130,5 +140,5 @@ func readInput(path string) (out area, err error) {
 		}
 		y++
 	}
-	return area{landscape, xy{maxx,y}},nil
+	return area{acres: landscape, maxDimensions: xy{maxx,y}},nil
 }
