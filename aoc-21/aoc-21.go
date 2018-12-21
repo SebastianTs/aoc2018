@@ -36,8 +36,7 @@ func main() {
 	}
 	fmt.Println("Running until a cycle is detected might take some time. Go get a coffee ...")
 	cur = register{}
-	seen := make(map[int]int)
-	count := 0
+	seen := make(map[int]struct{})
 	last := 0
 	for i:=cur[ip]; i < len(program); {
 		p := program[i]
@@ -47,14 +46,13 @@ func main() {
 		if i == 29 {
 			val := cur[myPuzzleRegister]
 			if _, ok := seen[val]; !ok{
-				seen[val] = count
+				seen[val] = struct{}{}
 				last = val
 			} else {
 				fmt.Println("The value for register 0 to halt the program with the most instructions is", last)
 				break
 			}
 		}
-		count++
 	}
 }
 
